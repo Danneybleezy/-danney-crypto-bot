@@ -3,41 +3,29 @@
 import requests
 
 def get_market_summary():
-    url = "https://api.coingecko.com/api/v3/global"
-    try:
-        res = requests.get(url).json()
-        data = res["data"]
-
-        btc_dom = data["market_cap_percentage"]["btc"]
-        eth_dom = data["market_cap_percentage"]["eth"]
-        active_cryptos = data["active_cryptocurrencies"]
-        total_volume = data["total_volume"]["usd"] / 1e9
-        market_cap = data["total_market_cap"]["usd"] / 1e12
-
-        return {
-            "btc_dom": round(btc_dom, 2),
-            "eth_dom": round(eth_dom, 2),
-            "active_cryptos": active_cryptos,
-            "volume_b": round(total_volume, 2),
-            "market_cap_t": round(market_cap, 2)
-        }
-    except Exception as e:
-        print(f"❌ Error fetching market summary: {e}")
-        return None
-
-def get_top_gainers(limit=3):
-    url = "https://api.coingecko.com/api/v3/coins/markets"
+    url = "https://api.coingecko.com/api/v3/simple/price"
     params = {
-        "vs_currency": "usd",
-        "order": "percent_change_24h",
-        "per_page": 50,
-        "page": 1,
-        "sparkline": False
+        "ids": "bitcoin,ethereum",
+        "vs_currencies": "usd",
+        "include_24hr_change": "true"
     }
+
     try:
-        res = requests.get(url, params=params).json()
-        gainers = sorted(res, key=lambda x: x["price_change_percentage_24h"] or 0, reverse=True)
-        return gainers[:limit]
+        response = requests.get(url, params=params, timeout=10)
+        data = response.json()
+
+        btc = data.get("bitcoin", {})
+        eth = data.get("ethereum", {})
+
+        btc_price = btc.get("usd")
+        btc_change = btc.get("usd_24h_change", 0)
+        eth_price = eth.get("usd")
+        eth_change = eth.get("usd_24h_change", 0)
+
+        return (
+            f"🪙 Market Update:\n"
+            f"• BTC: ${btc_price:,.2f} ({btc_change:+.2f}%)\n"
+            f"• ETH: ${eth_price:,.2f} ({eth_change:+.2f}%)"
+        )
     except Exception as e:
-        print(f"❌ Error fetching top gainers: {e}")
-        return []
+        return f"⚠️ Error fetching market data: {e}"
