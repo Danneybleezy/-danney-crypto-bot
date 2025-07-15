@@ -1,18 +1,31 @@
 import os
 import tweepy
 
-# Authenticate using environment secrets
-client = tweepy.Client(
-    consumer_key=os.environ["TWITTER_API_KEY"],
-    consumer_secret=os.environ["TWITTER_API_SECRET"],
-    access_token=os.environ["TWITTER_ACCESS_TOKEN"],
-    access_token_secret=os.environ["TWITTER_ACCESS_SECRET"]
+# Load Twitter API credentials from environment variables
+TWITTER_API_KEY = os.getenv("TWITTER_API_KEY")
+TWITTER_API_SECRET = os.getenv("TWITTER_API_SECRET")
+TWITTER_ACCESS_TOKEN = os.getenv("TWITTER_ACCESS_TOKEN")
+TWITTER_ACCESS_SECRET = os.getenv("TWITTER_ACCESS_SECRET")
+
+# Authenticate with Twitter
+auth = tweepy.OAuth1UserHandler(
+    TWITTER_API_KEY,
+    TWITTER_API_SECRET,
+    TWITTER_ACCESS_TOKEN,
+    TWITTER_ACCESS_SECRET
 )
 
-def post_to_twitter(text):
+api = tweepy.API(auth)
+
+def post_to_twitter(tweet_text):
+    print("📢 Attempting to tweet:\n", tweet_text)
+
     try:
-        response = client.create_tweet(text=text)
-        tweet_id = response.data.get("id")
-        print(f"✅ Tweet posted: https://twitter.com/user/status/{tweet_id}")
+        api.update_status(tweet_text)
+        print("✅ Tweet posted successfully!")
+    except tweepy.errors.Forbidden as e:
+        print("❌ Failed to post tweet: Forbidden –", e)
+        if "duplicate" in str(e).lower():
+            print("⚠️ This tweet appears to be a duplicate.")
     except Exception as e:
-        print(f"❌ Failed to post tweet: {e}")
+        print("❌ Unexpected error posting tweet:", e)
