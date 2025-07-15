@@ -1,0 +1,32 @@
+{
+  "keywords": [
+    "#success",
+    "#grind",
+    "#hustle",
+    "#naijamade",
+    "#discipline",
+    "#mindset",
+    "#motivation",
+    "never give up",
+    "Elon Musk",
+    "Steve Jobs",
+    "Naija no dey carry last",
+    "#moneytalks",
+    "#mondaymotivation",
+    "#goalsetter",
+    "Jeff Bezos",
+    "focus mode",
+    "growth mindset",
+    "#hardwork",
+    "#persistence",
+    "#dreambig"
+  ],
+  "language_mix": {
+    "english": 0.8,
+    "pidgin": 0.2
+  },
+  "tweet_interval_hours_range": [3, 4],
+  "reply_delay_seconds_range": [30, 90],
+  "max_tweet_age_minutes": 5,
+  "tone": "motivational"
+}
