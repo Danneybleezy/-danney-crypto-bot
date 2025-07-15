@@ -1,20 +1,33 @@
-# helpers/fear_greed.py
-
 import requests
+from helpers.twitter import post_to_twitter
 
-def get_fear_greed_index():
+def run_fear_greed_mode():
     try:
-        url = "https://api.alternative.me/fng/?limit=1"
-        response = requests.get(url)
-        data = response.json()
+        response = requests.get("https://api.alternative.me/fng/")
+        data = response.json()["data"][0]
 
-        value = data["data"][0]["value"]
-        value_text = data["data"][0]["value_classification"]
-        updated = data["data"][0]["timestamp"]
+        index_value = data["value"]
+        index_text = data["value_classification"]
+        updated_at = data["timestamp"]
 
-        message = f"😬 *Fear & Greed Index:* {value} – {value_text}\nStay sharp out there."
+        emojis = {
+            "Extreme Fear": "😱",
+            "Fear": "😨",
+            "Neutral": "😐",
+            "Greed": "😎",
+            "Extreme Greed": "🚀"
+        }
 
-        return message
+        emoji = emojis.get(index_text, "📊")
+
+        tweet = (
+            f"🧠 *Fear & Greed Index Update*\n\n"
+            f"Market Sentiment: {index_text} {emoji}\n"
+            f"Index Score: {index_value}/100\n"
+            f"#Crypto #Bitcoin #Sentiment"
+        )
+
+        post_to_twitter(tweet)
 
     except Exception as e:
-        return f"⚠️ Couldn't fetch Fear & Greed Index: {e}"
+        print("❌ Error fetching Fear & Greed Index:", e)
