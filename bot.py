@@ -4,7 +4,7 @@ import os
 import time
 import random
 from datetime import datetime
-from motivation_generator import generate_motivation
+from ai_generate import ai_generate_motivation
 import tweepy
 import json
 
